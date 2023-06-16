@@ -56,17 +56,17 @@ def main(ask):
         
         return str(response)
 
+def create_app():
+    app = Flask(__name__)
 
-app = Flask(__name__)
+    @app.route('/safety-ask', methods=['GET'])
+    def get():
+        
+        ask = request.args.get('value')
+        
+        response = main(ask)
 
-@app.route('/safety-ask', methods=['GET'])
-def get():
-    
-    ask = request.args.get('value')
-    
-    response = main(ask)
+        return response
 
-    return response
-
-app.run()
+    app.run()
         
