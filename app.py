@@ -9,9 +9,6 @@ from langchain.callbacks import get_openai_callback
 import os
 import glob
 from flask import Flask, request, make_response, jsonify
-import json
-import codecs
-import ast
 
 def main(ask):
     load_dotenv()
