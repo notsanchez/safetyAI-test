@@ -30,7 +30,6 @@ easygui==0.98.3
 ebcdic==1.1.1
 entrypoints==0.4
 et-xmlfile==1.1.0
-extract-msg==0.41.1
 faiss-cpu==1.7.4
 fastapi==0.97.0
 filelock==3.12.2
