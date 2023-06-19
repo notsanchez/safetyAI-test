@@ -8,14 +8,14 @@ from langchain.llms import OpenAI
 from langchain.callbacks import get_openai_callback
 import os
 import glob
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, jsonify
 
-def main(ask):
+chunks = []
+
+def makeChunks():
     load_dotenv()
     
-    file_path = "./documents"
-    chunks = []
-    
+    file_path = "./documents"    
     arquivos_pdf = []
 
     for arquivo in glob.glob(os.path.join(file_path, "*.pdf")):
@@ -41,6 +41,8 @@ def main(ask):
                     for chunk in text_splitter.split_text(text):
                         chunks.append(chunk)
 
+def main(ask):
+    
     embeddings = OpenAIEmbeddings()
     knowledge_base = FAISS.from_texts(chunks, embeddings)
 
@@ -52,22 +54,21 @@ def main(ask):
         llm = OpenAI()
         chain = load_qa_chain(llm, chain_type="stuff")
         with get_openai_callback() as cb:
-            print(cb)
             response = chain.run(input_documents=docs, question=user_question)
         
         return str(response)
 
-def create_app():
-    app = Flask(__name__)
+app = Flask(__name__)
+makeChunks()
 
-    @app.route('/safety-ask', methods=['GET'])
-    def get():
+@app.route('/safety-ask', methods=['GET'])
+def get():
         
-        ask = request.args.get('value')
+    ask = request.args.get('value')
+    Authorization = request.headers.get('Authorization')
         
-        response = main(ask)
-
-        return response
-
-    app.run()
-        
+    response = main(ask)
+    
+    return jsonify(
+        response= response,
+    )
