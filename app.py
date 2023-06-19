@@ -77,6 +77,19 @@ def post():
     
     
     return str(response)
+
+@app.route('/twilio-test', methods=['POST'])
+def post():
+    response = MessagingResponse()
+    Form = request.form['Body']
+    
+    response.message(Form)
+
+    return str(response)
+
+@app.route('/', methods=['GET'])
+def post():
+   return "<h1 style='color:black'>Hi!</h1>"
     
     
     
