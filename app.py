@@ -9,6 +9,7 @@ from langchain.callbacks import get_openai_callback
 import os
 import glob
 from flask import Flask, request, jsonify
+from twilio.twiml.messaging_response import MessagingResponse
 
 chunks = []
 
@@ -60,15 +61,20 @@ def main(ask):
 
 app = Flask(__name__)
 makeChunks()
-
-@app.route('/safety-ask', methods=['GET'])
-def get():
-        
-    ask = request.args.get('value')
-    Authorization = request.headers.get('Authorization')
-        
-    response = main(ask)
     
-    return jsonify(
-        response= response,
-    )
+
+@app.route('/twilio-ask-ai', methods=['POST'])
+def post():
+    response = MessagingResponse()
+    Form = request.form['Body']
+    
+    response.message('*Analisando a pergunta...*')
+    
+    responseIA = main(Form)
+    
+    response.message(responseIA)
+    
+    return str(response)
+    
+    
+    
