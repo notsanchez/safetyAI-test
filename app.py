@@ -63,20 +63,18 @@ app = Flask(__name__)
 makeChunks()
     
 
-@app.route('/twillio-test', methods=['POST'])
+@app.route('/twilio-ask-ai', methods=['POST'])
 def post():
     response = MessagingResponse()
     Form = request.form['Body']
     
-    img = 'https://cdn1.safetyhub.io/06eec5ec/employee-image/3572bac6'
+    #img = 'https://cdn1.safetyhub.io/06eec5ec/employee-image/3572bac6'
     
-    response.message('*A cabeça que tudo sabe está pensando.......*')
+    response.message('*Analisando sua pergunta...*')
     
     responseIA = main(Form)
+    response.message(responseIA)
     
-    resp = response.message(responseIA)
-    
-    resp.media(img)
     
     return str(response)
     
