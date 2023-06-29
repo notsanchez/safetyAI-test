@@ -19,8 +19,8 @@ load_dotenv()
 
 chunks = []
 
-account_sid = 'ACda5c1e8cbaad8784265d13d9c3e819e4'
-auth_token = '6e00149a65713bb8e8e7f96d17c30b62'
+account_sid = os.getenv('ACCOUNT_SID')
+auth_token = os.getenv('AUTH_TOKEN')
 
 def makeChunks():
     load_dotenv()
