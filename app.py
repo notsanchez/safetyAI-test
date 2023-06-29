@@ -10,8 +10,17 @@ import os
 import glob
 from flask import Flask, request, jsonify
 from twilio.twiml.messaging_response import MessagingResponse
+from queue import Queue
+import time
+import os
+from twilio.rest import Client
+
+load_dotenv()
 
 chunks = []
+
+account_sid = 'ACda5c1e8cbaad8784265d13d9c3e819e4'
+auth_token = '6e00149a65713bb8e8e7f96d17c30b62'
 
 def makeChunks():
     load_dotenv()
@@ -40,8 +49,9 @@ def makeChunks():
                     )
                     
                     for chunk in text_splitter.split_text(text):
-                        chunks.append(chunk)
-
+                        chunks.append(chunk)          
+    
+    
 def main(ask):
     
     embeddings = OpenAIEmbeddings()
@@ -61,22 +71,49 @@ def main(ask):
 
 app = Flask(__name__)
 makeChunks()
-    
+
+fila = Queue()
+client = Client(account_sid, auth_token)
+
+def funcao_segundo_plano():
+    while True:
+        if not fila.empty():
+            fila.get
+        time.sleep(1)
+
 
 @app.route('/twilio-ask-ai', methods=['POST'])
 def post():
-    response = MessagingResponse()
-    Form = request.form['Body']
+
+    message = client.messages.create(
+        from_=request.form['To'],
+        body='Analisando sua pergunta',
+        to=request.form['From']
+    )
+
+    print(message)
     
-    #img = 'https://cdn1.safetyhub.io/06eec5ec/employee-image/3572bac6'
+    fila.put(funcao_em_segundo_plano(request.form['To'], request.form['Body'], request.form['From']))
     
-    response.message('*Analisando sua pergunta...*')
+    return str(message)
+
+def funcao_em_segundo_plano(fromP, body, toP):
     
-    responseIA = main(Form)
-    response.message(responseIA)
+    time.sleep(30)
+    print(toP)
+    print(fromP)
     
+    responseIA = main(body)
     
-    return str(response)
+    message = client.messages.create(
+        from_=fromP,
+        body=responseIA,
+        to=toP
+    )
+
+    print(message)
+    
+
 
 @app.route('/', methods=['GET'])
 def get():
